@@ -172,4 +172,4 @@ homelab/
 Computer Science, University of Denver (Expected June 2026)  
 AWS Certified Cloud Practitioner
 
-[LinkedIn](www.linkedin.com/in/michael-crawford-2a17aa1ab) | [GitHub](https://github.com/michaelcraw)
+[LinkedIn](https://www.linkedin.com/in/michael-crawford-2a17aa1ab) | [GitHub](https://github.com/michaelcraw)
