@@ -56,9 +56,9 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 | Dell 7050 | Debian 13 | i7-6700 (4c/8t) | 32GB | 465GB HDD | 100.117.229.28 | K8s control plane, Docker, Ollama, video hosting |
 | Sony VAIO | Debian 13 | Core2 Duo T6600 | 4GB | 128GB SSD | 100.96.120.65 | Monitoring (Grafana/Prometheus), WOL relay |
 | HP Compaq | Debian 12 | AMD A10-5800K | 19GB | 256GB SSD + 1TB HDD + 500GB HDD | 100.64.249.4 | K8s worker, WAN NAS, Syncthing |
-| Lenovo | Debian 13 | - | - | - | 100.66.222.35 | K8s worker, sysadmin playground |
+| Lenovo | Debian 13 | Intel Core M | 8GB | 256GB SSD | 100.66.222.35 | K8s worker, sysadmin playground |
 | Raspberry Pi 4 | Debian 13 | ARM Cortex-A72 | 4GB | 32GB SD + 2x USB drives | 100.73.143.19 | Live camera (Motion) |
-| Dell 5070 | Linux Mint | - | - | NVMe SSD | 100.108.102.105 | Secondary desktop, Syncthing |
+| Dell 5070 | Linux Mint | - | 32GB | NVMe SSD | 100.108.102.105 | Secondary desktop, Syncthing |
 
 ## What's Running
 
@@ -172,4 +172,4 @@ homelab/
 Computer Science, University of Denver (Expected June 2026)  
 AWS Certified Cloud Practitioner
 
-[LinkedIn](https://linkedin.com/in/www.linkedin.com/in/michael-crawford-2a17aa1ab) | [GitHub](https://github.com/michaelcraw)
+[LinkedIn](www.linkedin.com/in/michael-crawford-2a17aa1ab) | [GitHub](https://github.com/michaelcraw)
