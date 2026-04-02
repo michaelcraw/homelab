@@ -8,42 +8,42 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 ┌─────────────────────────────────────────────────────────────────┐
 │                     Tailscale Mesh VPN                          │
 │                                                                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │  MacBook Pro  │  │  Dell 7050   │  │     Sony VAIO        │  │
-│  │  M1 (daily    │  │  i7-6700     │  │  Core2 Duo           │  │
-│  │  driver)      │  │  32GB RAM    │  │  4GB RAM             │  │
-│  │               │  │              │  │                      │  │
-│  │  • Command    │  │  • K8s       │  │  • Grafana           │  │
-│  │    Center     │  │    Control   │  │  • Prometheus         │  │
-│  │  • Syncthing  │  │    Plane     │  │  • WOL Relay         │  │
-│  │  • Fleet      │  │  • Ollama    │  │  • Always On         │  │
-│  │    Scripts    │  │  • Open      │  │                      │  │
-│  │  • Node       │  │    WebUI    │  │                      │  │
-│  │    Exporter   │  │  • Docker    │  │                      │  │
-│  │               │  │  • Cowrie    │  │                      │  │
-│  │               │  │  • Nginx     │  │                      │  │
-│  │               │  │  • Funnel    │  │                      │  │
-│  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │  MacBook Pro │  │  Dell 7050   │  │     Sony VAIO        │   │
+│  │  M1 (daily   │  │  i7-6700     │  │  Core2 Duo           │   │
+│  │  driver)     │  │  32GB RAM    │  │  4GB RAM             │   │
+│  │              │  │              │  │                      │   │
+│  │  • Command   │  │  • K8s       │  │  • Grafana           │   │
+│  │    Center    │  │    Control   │  │  • Prometheus        │   │
+│  │  • Syncthing │  │    Plane     │  │  • WOL Relay         │   │
+│  │  • Fleet     │  │  • Ollama    │  │  • Always On         │   │
+│  │    Scripts   │  │  • Open      │  │                      │   │
+│  │  • Node      │  │    WebUI     │  │                      │   │
+│  │    Exporter  │  │  • Docker    │  │                      │   │
+│  │              │  │  • Cowrie    │  │                      │   │
+│  │              │  │  • Nginx     │  │                      │   │
+│  │              │  │  • Funnel    │  │                      │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
 │                                                                 │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │  HP Compaq    │  │   Lenovo     │  │   Raspberry Pi 4     │  │
-│  │  AMD A10      │  │              │  │                      │  │
-│  │  19GB RAM     │  │  • K8s       │  │  • Live Camera       │  │
-│  │               │  │    Worker    │  │    (Motion)          │  │
-│  │  • K8s Worker │  │  • Sysadmin  │  │  • Auto Storage      │  │
-│  │  • WAN NAS    │  │    Sandbox   │  │    Rotation          │  │
-│  │  • Samba      │  │              │  │                      │  │
-│  │  • Syncthing  │  │              │  │                      │  │
-│  │  • mergerfs   │  │              │  │                      │  │
-│  └──────────────┘  └──────────────┘  └──────────────────────┘  │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
+│  │  HP Compaq   │  │   Lenovo     │  │   Raspberry Pi 4     │   │
+│  │  AMD A10     │  │              │  │                      │   │
+│  │  19GB RAM    │  │  • K8s       │  │  • Live Camera       │   │
+│  │              │  │    Worker    │  │    (Motion)          │   │
+│  │  • K8s Worker│  │  • Sysadmin  │  │  • Auto Storage      │   │
+│  │  • WAN NAS   │  │    Sandbox   │  │    Rotation          │   │
+│  │  • Samba     │  │              │  │                      │   │
+│  │  • Syncthing │  │              │  │                      │   │
+│  │  • mergerfs  │  │              │  │                      │   │
+│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
 │                                                                 │
 │  ┌──────────────┐                                               │
-│  │  Dell 5070    │                                               │
-│  │  Linux Mint   │                                               │
-│  │               │                                               │
-│  │  • Syncthing  │                                               │
-│  │  • Secondary  │                                               │
-│  │    Desktop    │                                               │
+│  │  Dell 5070   │                                               │
+│  │  Linux Mint  │                                               │
+│  │              │                                               │
+│  │  • Syncthing │                                               │
+│  │  • Secondary │                                               │
+│  │    Desktop   │                                               │
 │  └──────────────┘                                               │
 └─────────────────────────────────────────────────────────────────┘
 ```
