@@ -58,7 +58,7 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 | HP Compaq | Debian 12 | AMD A10-5800K | 19GB | 256GB SSD + 1TB HDD + 500GB HDD | 100.64.249.4 | K8s worker, WAN NAS, Syncthing |
 | Lenovo | Debian 13 | Intel Core M | 8GB | 256GB SSD | 100.66.222.35 | K8s worker, sysadmin playground |
 | Raspberry Pi 4 | Debian 13 | ARM Cortex-A72 | 4GB | 32GB SD + 2x USB drives | 100.73.143.19 | Live camera (Motion) |
-| Dell 5070 | Linux Mint | - | 32GB | NVMe SSD | 100.108.102.105 | Secondary desktop, Syncthing |
+| Dell 5070 | Linux Mint | i7-9700T | 32GB | NVMe SSD | 100.108.102.105 | Secondary desktop, Syncthing |
 
 ## What's Running
 
