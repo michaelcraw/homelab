@@ -1,6 +1,6 @@
 # Fleet Management Homelab
 
-A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes (k3s), Docker, Grafana/Prometheus monitoring, self-hosted AI, a WAN-accessible NAS, live camera system, SSH honeypot, and automated fleet management — all connected via Tailscale mesh VPN.
+A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes (k3s), Docker, Grafana/Prometheus monitoring, self-hosted AI, a WAN-accessible NAS, live camera system, and automated fleet management — all connected via Tailscale mesh VPN.
 
 ## Network Diagram
 
@@ -20,26 +20,26 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 │  │    Scripts   │  │  • Open      │  │                      │   │
 │  │  • Node      │  │    WebUI     │  │                      │   │
 │  │    Exporter  │  │  • Docker    │  │                      │   │
-│  │              │  │  • Cowrie    │  │                      │   │
 │  │              │  │  • Nginx     │  │                      │   │
 │  │              │  │  • Funnel    │  │                      │   │
 │  └──────────────┘  └──────────────┘  └──────────────────────┘   │
 │                                                                 │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────┐   │
 │  │  HP Compaq   │  │   Lenovo     │  │   Raspberry Pi 4     │   │
-│  │  AMD A10     │  │              │  │                      │   │
-│  │  19GB RAM    │  │  • K8s       │  │  • Live Camera       │   │
-│  │              │  │    Worker    │  │    (Motion)          │   │
-│  │  • K8s Worker│  │  • Sysadmin  │  │  • Auto Storage      │   │
-│  │  • WAN NAS   │  │    Sandbox   │  │    Rotation          │   │
-│  │  • Samba     │  │              │  │                      │   │
-│  │  • Syncthing │  │              │  │                      │   │
+│  │  AMD A10     │  │  Intel Core M│  │  ARM Cortex-A72      │   │
+│  │  19GB RAM    │  │  8GB RAM     │  │  4GB RAM             │   │
+│  │              │  │              │  │                      │   │
+│  │  • K8s Worker│  │  • K8s       │  │  • Live Camera       │   │
+│  │  • WAN NAS   │  │    Worker    │  │    (Motion)          │   │
+│  │  • Samba     │  │  • Sysadmin  │  │  • Auto Storage      │   │
+│  │  • Syncthing │  │    Sandbox   │  │    Rotation          │   │
 │  │  • mergerfs  │  │              │  │                      │   │
 │  └──────────────┘  └──────────────┘  └──────────────────────┘   │
 │                                                                 │
 │  ┌──────────────┐                                               │
 │  │  Dell 5070   │                                               │
-│  │  Linux Mint  │                                               │
+│  │  i7-9700T    │                                               │
+│  │  32GB RAM    │                                               │
 │  │              │                                               │
 │  │  • Syncthing │                                               │
 │  │  • Secondary │                                               │
@@ -76,13 +76,14 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
   - Disk health degradation (reallocated sectors)
   - Disk space above 85%
   - RAM usage above 90%
+  - Camera storage above 75%
 
 ### WAN NAS (HP Compaq)
 - Built from scratch on a bare HP Compaq Pro 6305
 - WiFi driver (RTL88x2BU) compiled from source with DKMS for auto-rebuild on kernel updates
 - Debian 12 installed offline using DVD ISO as local apt repository
 - Two drives (1TB HGST + 500GB Seagate) formatted ext4 and merged via **mergerfs**
-- **Samba** file sharing with multi-user access (michael + corrin)
+- **Samba** file sharing with multi-user access
 - **Syncthing** Docker container auto-syncing Mac, Dell 5070, and NAS
 
 ### Self-Hosted AI (Dell 7050)
@@ -99,11 +100,6 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 - Live stream accessible on port 8081 via Tailscale
 - 60-second MKV clip recording with automated storage rotation
 - Custom **systemd timer** checks disk usage every 5 minutes and switches recording to a secondary USB drive at 90% capacity
-
-### SSH Honeypot (Dell 7050)
-- **Cowrie** SSH honeypot running in Docker on port 2222
-- Logs all connection attempts, credentials, and commands
-- Internal use for security research and learning
 
 ### Fleet Automation (Mac)
 - **update-fleet.sh** — runs apt update/upgrade on all machines
@@ -150,7 +146,11 @@ homelab/
 ├── configs/
 │   ├── prometheus/
 │   │   └── prometheus.yml       # Prometheus scrape configuration
-│   ├── grafana/                 # Grafana dashboard exports
+│   ├── grafana/
+│   │   └── alert-queries.md     # Grafana alert queries (Slack webhook)
+│   ├── docker/
+│   │   ├── dell-7050-docker.md  # Dell 7050 container configs
+│   │   └── hp-docker.md         # HP Compaq container configs
 │   ├── samba/                   # Samba share configuration
 │   └── syncthing/               # Syncthing configuration
 └── screenshots/                 # Grafana dashboard screenshots
@@ -161,15 +161,24 @@ homelab/
 - **Infrastructure:** Kubernetes (k3s), Docker, Tailscale, Nginx, Samba, mergerfs
 - **Monitoring:** Prometheus, Grafana, Node Exporter, smartctl_exporter, Slack alerting
 - **AI/ML:** Ollama, Open WebUI, LLM inference
-- **Security:** Cowrie SSH honeypot, SSH key authentication, UFW, WireGuard
+- **Security:** SSH key authentication, UFW, WireGuard
 - **Automation:** Bash scripting, systemd services, Wake-on-LAN, DKMS
 - **Operating Systems:** Debian 12/13, Linux Mint, macOS
 - **Networking:** Layer 2/3, WOL, DNS, SMB, mesh VPN
 
+## Roadmap
+
+- [ ] Extend fleet to AWS (hybrid cloud architecture)
+- [ ] Deploy services across on-prem and cloud with Kubernetes federation
+- [ ] Set up CI/CD pipeline with Gitea and ArgoCD
+- [ ] Implement Ansible for automated fleet provisioning
+- [ ] Add Nextcloud for self-hosted cloud storage
+- [ ] Deploy Pi-hole for network-wide ad blocking
+
 ## Author
 
 **Michael Crawford**  
-Computer Science, University of Denver (Expected June 2026)  
+Computer Science, University of Denver 
 AWS Certified Cloud Practitioner
 
 [LinkedIn](https://www.linkedin.com/in/michael-crawford-2a17aa1ab) | [GitHub](https://github.com/michaelcraw)
