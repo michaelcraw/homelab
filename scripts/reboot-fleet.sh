@@ -34,4 +34,4 @@ for ENTRY in "${MACHINES[@]}"; do
   echo ""
 done
 
-echo "reboot's complete"
+echo "reboot is complete"
