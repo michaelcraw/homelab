@@ -17,10 +17,3 @@ docker run -d \
   --restart unless-stopped \
   nginx
 
-## Cowrie SSH Honeypot
-docker run -d \
-  --name cowrie \
-  -p 2222:2222/tcp \
-  -v cowrie-logs:/cowrie/var/log/cowrie \
-  --restart unless-stopped \
-  cowrie/cowrie:latest
