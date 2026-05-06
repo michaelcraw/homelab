@@ -1,6 +1,6 @@
 # Fleet Management Homelab
 
-A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes (k3s), Docker, Grafana/Prometheus monitoring, self-hosted AI, a WAN-accessible NAS, live camera system, and automated fleet management — all connected via Tailscale mesh VPN.
+A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes (k3s), Docker, Grafana/Prometheus monitoring, self-hosted AI, a WAN-accessible NAS, live camera system with motion alerts, and automated fleet management — all connected via Tailscale mesh VPN.
 
 ## Network Diagram
 
@@ -31,11 +31,12 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 │  │              │  │              │  │                      │   │
 │  │  • K8s Worker│  │  • K8s       │  │  • Live Camera       │   │
 │  │  • WAN NAS   │  │    Worker    │  │    (Motion)          │   │
-│  │  • Samba     │  │  • Sysadmin  │  │  • Auto Storage      │   │
-│  │  • Syncthing │  │    Sandbox   │  │    Rotation          │   │
-│  │  • mergerfs  │  │              │  │                      │   │
-│  └──────────────┘  └──────────────┘  └──────────────────────┘   │
-│                                                                 │
+│  │  • Samba     │  │  • Sysadmin  │  │  • Motion Alerts     │   │
+│  │  • Syncthing │  │    Sandbox   │  │    (Slack)           │   │
+│  │  • mergerfs  │  │  • OBD2      │  │  • Auto Storage      │   │
+│  └──────────────┘  │    Logger    │  │    Rotation          │   │
+│                    │    (WIP)     │  └──────────────────────┘   │
+│                    └──────────────┘                             │
 │  ┌──────────────┐                                               │
 │  │  Dell 5070   │                                               │
 │  │  i7-9700T    │                                               │
@@ -56,8 +57,8 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 | Dell 7050 | Debian 13 | i7-6700 (4c/8t) | 32GB | 465GB HDD | 100.117.229.28 | K8s control plane, Docker, Ollama, video hosting |
 | Sony VAIO | Debian 13 | Core2 Duo T6600 | 4GB | 128GB SSD | 100.96.120.65 | Monitoring (Grafana/Prometheus), WOL relay |
 | HP Compaq | Debian 12 | AMD A10-5800K | 19GB | 256GB SSD + 1TB HDD + 500GB HDD | 100.64.249.4 | K8s worker, WAN NAS, Syncthing |
-| Lenovo | Debian 13 | Intel Core M | 8GB | 256GB SSD | 100.66.222.35 | K8s worker, sysadmin playground |
-| Raspberry Pi 4 | Debian 13 | ARM Cortex-A72 | 4GB | 32GB SD + 2x USB drives | 100.73.143.19 | Live camera (Motion) |
+| Lenovo Yoga 3 Pro | Debian 12 | Intel Core M 5Y70 | 8GB | 238GB SSD | 100.66.222.35 | K8s worker, sysadmin sandbox, OBD2 logger (WIP) |
+| Raspberry Pi 4 | Debian 13 | ARM Cortex-A72 | 4GB | 32GB SD + 2x USB drives | 100.73.143.19 | Live camera (Motion), motion alerts |
 | Dell 5070 | Linux Mint | i7-9700T | 32GB | NVMe SSD | 100.108.102.105 | Secondary desktop, Syncthing |
 
 ## What's Running
@@ -95,10 +96,11 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 - **Nginx** Docker container serving a homelab project video
 - Publicly accessible via **Tailscale Funnel** with a QR code for sharing
 
-### Live Camera (Raspberry Pi 4)
+### Live Camera + Motion Alerts (Raspberry Pi 4)
 - **Motion** software capturing 640x480 at 15fps from USB webcam
 - Live stream accessible on port 8081 via Tailscale
 - 60-second MKV clip recording with automated storage rotation
+- **Slack webhook alerts** triggered automatically on motion detection
 - Custom **systemd timer** checks disk usage every 5 minutes and switches recording to a secondary USB drive at 90% capacity
 
 ### Fleet Automation (Mac)
@@ -106,7 +108,7 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 - **reboot-fleet.sh** — reboots selected machines remotely
 - **shutdown-fleet.sh** — shuts down the fleet
 - **dellHpOff.sh** — targeted shutdown for Dell + HP
-- **wake-fleet.sh** / **wake-dellHp.sh** — Wake-on-LAN via Sony relay
+- **wake-dellHp.sh** — Wake-on-LAN via Sony relay
 - All scripts handle offline machines gracefully
 
 ### Wake-on-LAN
@@ -118,6 +120,10 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 - **Syncthing** syncs school, aws, job, and random folders across Mac ↔ HP NAS ↔ Dell 5070
 - HP NAS acts as always-on hub — machines sync when they come online
 - Accessible via Samba from any machine on the tailnet
+
+## Related Projects
+
+- [homelab-bootloader](https://github.com/michaelcraw/homelab-bootloader) — 512-byte x86 bootloader written in NASM assembly that displays fleet status on boot, runs in QEMU
 
 ## Networking
 - All machines connected via **Tailscale** mesh VPN (WireGuard-based)
@@ -140,7 +146,6 @@ homelab/
 │   ├── reboot-fleet.sh          # Fleet reboot with Pi prompt
 │   ├── shutdown-fleet.sh        # Fleet shutdown
 │   ├── dellHpOff.sh             # Targeted Dell + HP shutdown
-│   ├── wake-fleet.sh            # WOL wake all machines
 │   ├── wake-dellHp.sh           # WOL wake Dell + HP
 │   └── motion-storage-check.sh  # Pi camera storage rotation
 ├── configs/
@@ -163,6 +168,7 @@ homelab/
 - **AI/ML:** Ollama, Open WebUI, LLM inference
 - **Security:** SSH key authentication, UFW, WireGuard
 - **Automation:** Bash scripting, systemd services, Wake-on-LAN, DKMS
+- **Low-level:** x86 assembly (NASM), BIOS interrupts, bootloader development
 - **Operating Systems:** Debian 12/13, Linux Mint, macOS
 - **Networking:** Layer 2/3, WOL, DNS, SMB, mesh VPN
 
@@ -174,11 +180,12 @@ homelab/
 - [ ] Implement Ansible for automated fleet provisioning
 - [ ] Add Nextcloud for self-hosted cloud storage
 - [ ] Deploy Pi-hole for network-wide ad blocking
+- [ ] OBD2 vehicle data logger for 2010 Toyota Tacoma — log RPM, speed, coolant temp, and engine load via Bluetooth OBD2 adapter, sync logs to NAS, visualize in Grafana (in progress)
 
 ## Author
 
 **Michael Crawford**  
-Computer Science, University of Denver 
+Computer Science, University of Denver  
 AWS Certified Cloud Practitioner
 
 [LinkedIn](https://www.linkedin.com/in/michael-crawford-2a17aa1ab) | [GitHub](https://github.com/michaelcraw)
