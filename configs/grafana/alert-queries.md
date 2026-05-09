@@ -57,13 +57,7 @@ Threshold: IS ABOVE 90
 Alerts when the Raspberry Pi's primary camera storage exceeds 75% used.
 
 ```promql
-100 * (
-  1 - (
-    node_filesystem_free_bytes{instance="livecam", mountpoint="/mnt/camera", device="/dev/sda"}
-    /
-    node_filesystem_size_bytes{instance="livecam", mountpoint="/mnt/camera", device="/dev/sda"}
-  )
-)
+100 * (1 - (node_filesystem_free_bytes{instance="livecam", mountpoint="/mnt/camera", device="/dev/sda"}/node_filesystem_size_bytes{instance="livecam", mountpoint="/mnt/camera", device="/dev/sda"}))
 ```
 
 Threshold: IS ABOVE 75 (with Reduce → Last → Drop Non-numeric Values)
@@ -73,11 +67,7 @@ Threshold: IS ABOVE 75 (with Reduce → Last → Drop Non-numeric Values)
 Alerts when the Pi's primary camera storage exceeds 90% used.
 
 ```promql
-100 * (1 - (
-  node_filesystem_avail_bytes{instance="livecam",mountpoint="/mnt/camera"}
-  /
-  node_filesystem_size_bytes{instance="livecam",mountpoint="/mnt/camera"}
-))
+100 * (1 - (node_filesystem_avail_bytes{instance="livecam",mountpoint="/mnt/camera"}/node_filesystem_size_bytes{instance="livecam",mountpoint="/mnt/camera"}))
 ```
 
 Threshold: IS ABOVE 90
@@ -87,11 +77,7 @@ Threshold: IS ABOVE 90
 Alerts when the Pi's secondary camera storage exceeds 75% used.
 
 ```promql
-100 * (1 - (
-  node_filesystem_avail_bytes{instance="livecam",mountpoint="/mnt/camera2"}
-  /
-  node_filesystem_size_bytes{instance="livecam",mountpoint="/mnt/camera2"}
-))
+100 * (1 - (node_filesystem_avail_bytes{instance="livecam",mountpoint="/mnt/camera2"}/node_filesystem_size_bytes{instance="livecam",mountpoint="/mnt/camera2"}))
 ```
 
 Threshold: IS ABOVE 75
@@ -101,11 +87,7 @@ Threshold: IS ABOVE 75
 Alerts when the Pi's secondary camera storage is nearly full (99%).
 
 ```promql
-100 * (1 - (
-  node_filesystem_avail_bytes{instance="livecam",mountpoint="/mnt/camera2"}
-  /
-  node_filesystem_size_bytes{instance="livecam",mountpoint="/mnt/camera2"}
-))
+100 * (1 - (node_filesystem_avail_bytes{instance="livecam",mountpoint="/mnt/camera2"}/node_filesystem_size_bytes{instance="livecam",mountpoint="/mnt/camera2"}))
 ```
 
 Threshold: IS ABOVE 99
