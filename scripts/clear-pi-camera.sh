@@ -3,13 +3,6 @@
 PI_IP="100.73.143.19"
 PI_USER="michael"
 
-echo "  Pi Camera Drive Clear Tool"
-echo ""
-
-# Get disk usage for both drives
-echo "Fetching drive usage from Pi..."
-echo ""
-
 CAMERA1_USAGE=$(ssh $PI_USER@$PI_IP "du -sh /mnt/camera/motion 2>/dev/null || echo '0B'")
 CAMERA2_USAGE=$(ssh $PI_USER@$PI_IP "du -sh /mnt/camera2/motion 2>/dev/null || echo '0B'")
 CAMERA1_FREE=$(ssh $PI_USER@$PI_IP "df -h /mnt/camera | tail -1 | awk '{print \$4}'")
@@ -22,8 +15,6 @@ echo ""
 echo "  Drive 2 (/mnt/camera2):"
 echo "    Used by footage: $CAMERA2_USAGE"
 echo "    Free space:      $CAMERA2_FREE"
-echo ""
-echo "============================================"
 echo ""
 
 # Ask which drives to clear
