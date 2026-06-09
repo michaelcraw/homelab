@@ -1,6 +1,6 @@
 # Fleet Management Homelab
 
-A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes (k3s), Docker, Grafana/Prometheus monitoring, self-hosted AI, a WAN-accessible NAS, live camera system with motion alerts, and automated fleet management — all connected via Tailscale mesh VPN.
+An 8-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes (k3s), Docker, Grafana/Prometheus monitoring, self-hosted AI, a WAN-accessible NAS, live camera system with motion alerts, a dedicated Grafana kiosk display, and automated fleet management — all connected via Tailscale mesh VPN.
 
 ## Network Diagram
 
@@ -33,19 +33,19 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 │  │  • WAN NAS   │  │    Worker    │  │    (Motion)          │   │
 │  │  • Samba     │  │  • Sysadmin  │  │  • Motion Alerts     │   │
 │  │  • Syncthing │  │    Sandbox   │  │    (Slack)           │   │
-│  │  • mergerfs  │  │  • OBD2      │  │  • Auto Storage      │   │
-│  └──────────────┘  │    Logger    │  │    Rotation          │   │
-│                    │    (WIP)     │  └──────────────────────┘   │
-│                    └──────────────┘                             │
-│  ┌──────────────┐                                               │
-│  │  Dell 5070   │                                               │
-│  │  i7-9700T    │                                               │
-│  │  32GB RAM    │                                               │
-│  │              │                                               │
-│  │  • Syncthing │                                               │
-│  │  • Secondary │                                               │
-│  │    Desktop   │                                               │
-│  └──────────────┘                                               │
+│  │  • mergerfs  │  │              │  │  • Auto Storage      │   │
+│  └──────────────┘  └──────────────┘  │    Rotation          │   │
+│                                      └──────────────────────┘   │
+│  ┌──────────────┐  ┌──────────────┐                             │
+│  │  Dell 5070   │  │  Dell 7440   │                             │
+│  │  i7-9700T    │  │  i5-1345U    │                             │
+│  │  32GB RAM    │  │  16GB RAM    │                             │
+│  │              │  │              │                             │
+│  │  • Syncthing │  │  • Grafana   │                             │
+│  │  • Secondary │  │    Kiosk     │                             │
+│  │    Desktop   │  │    Display   │                             │
+│  │  • KVM/QEMU  │  │  • Always On │                             │
+│  └──────────────┘  └──────────────┘                             │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -57,9 +57,10 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 | Dell 7050 | Debian 13 | i7-6700 (4c/8t) | 32GB | 465GB HDD | 100.117.229.28 | K8s control plane, Docker, Ollama, video hosting |
 | Sony VAIO | Debian 13 | Core2 Duo T6600 | 4GB | 128GB SSD | 100.96.120.65 | Monitoring (Grafana/Prometheus), WOL relay |
 | HP Compaq | Debian 12 | AMD A10-5800K | 19GB | 256GB SSD + 1TB HDD + 500GB HDD | 100.64.249.4 | K8s worker, WAN NAS, Syncthing |
-| Lenovo Yoga 3 Pro | Debian 12 | Intel Core M 5Y70 | 8GB | 238GB SSD | 100.66.222.35 | K8s worker, sysadmin sandbox, OBD2 logger (WIP) |
+| Lenovo Yoga 3 Pro | Debian 12 | Intel Core M 5Y70 | 8GB | 238GB SSD | 100.66.222.35 | K8s worker, sysadmin sandbox |
 | Raspberry Pi 4 | Debian 13 | ARM Cortex-A72 | 4GB | 32GB SD + 2x USB drives | 100.73.143.19 | Live camera (Motion), motion alerts |
-| Dell 5070 | Linux Mint | i7-9700T | 32GB | NVMe SSD | 100.108.102.105 | Secondary desktop, Syncthing |
+| Dell 5070 | Linux Mint | i7-9700T | 32GB | NVMe SSD | 100.108.102.105 | Secondary desktop, Syncthing, KVM/QEMU host |
+| Dell 7440 | Debian 13 | i5-1345U | 16GB | 512GB NVMe | 100.106.110.55 | Grafana kiosk display, always-on monitoring screen |
 
 ## What's Running
 
@@ -78,6 +79,14 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
   - Disk space above 85%
   - RAM usage above 90%
   - Camera storage above 75%
+
+### Grafana Kiosk Display (Dell 7440)
+- Dedicated always-on monitoring display running Google Chrome in fullscreen
+- Auto-launches on boot via systemd user service targeting GNOME Wayland
+- Displays Node Exporter Full dashboard; touchpad usable for navigating between dashboards
+- Screen controlled remotely from Mac via `screen-off-7440.sh` and `screen-on-7440.sh`
+- Battery charge threshold set to 80% via udev rule to prevent swelling while always docked
+- Connected via D-Link D6000 USB-C dock for ethernet and charging
 
 ### WAN NAS (HP Compaq)
 - Built from scratch on a bare HP Compaq Pro 6305
@@ -107,8 +116,10 @@ A 7-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes 
 - **update-fleet.sh** — runs apt update/upgrade on all machines
 - **reboot-fleet.sh** — reboots selected machines remotely
 - **shutdown-fleet.sh** — shuts down the fleet
-- **dellHpOff.sh** — targeted shutdown for Dell + HP
+- **dellHpOff.sh** — targeted shutdown for Dell 7050, HP NAS, and Dell 7440
 - **wake-dellHp.sh** — Wake-on-LAN via Sony relay
+- **screen-off-7440.sh** — turns off Dell 7440 display remotely via gdbus over SSH
+- **screen-on-7440.sh** — turns on Dell 7440 display remotely via gdbus over SSH
 - All scripts handle offline machines gracefully
 
 ### Wake-on-LAN
@@ -145,9 +156,11 @@ homelab/
 │   ├── update-fleet.sh          # Fleet-wide apt update/upgrade
 │   ├── reboot-fleet.sh          # Fleet reboot with Pi prompt
 │   ├── shutdown-fleet.sh        # Fleet shutdown
-│   ├── dellHpOff.sh             # Targeted Dell + HP shutdown
+│   ├── dellHpOff.sh             # Targeted Dell 7050 + HP + Dell 7440 shutdown
 │   ├── wake-dellHp.sh           # WOL wake Dell + HP
-│   └── motion-storage-check.sh  # Pi camera storage rotation
+│   ├── motion-storage-check.sh  # Pi camera storage rotation
+│   ├── screen-off-7440.sh       # Turn off Dell 7440 display remotely
+│   └── screen-on-7440.sh        # Turn on Dell 7440 display remotely
 ├── configs/
 │   ├── prometheus/
 │   │   └── prometheus.yml       # Prometheus scrape configuration
@@ -156,6 +169,8 @@ homelab/
 │   ├── docker/
 │   │   ├── dell-7050-docker.md  # Dell 7050 container configs
 │   │   └── hp-docker.md         # HP Compaq container configs
+│   ├── 7440/
+│   │   └── grafana-kiosk.service # Systemd user service for Grafana kiosk
 │   ├── samba/                   # Samba share configuration
 │   └── syncthing/               # Syncthing configuration
 └── screenshots/                 # Grafana dashboard screenshots
@@ -163,7 +178,7 @@ homelab/
 
 ## Skills & Technologies
 
-- **Infrastructure:** Kubernetes (k3s), Docker, Tailscale, Nginx, Samba, mergerfs
+- **Infrastructure:** Kubernetes (k3s), Docker, Tailscale, Nginx, Samba, mergerfs, KVM/QEMU
 - **Monitoring:** Prometheus, Grafana, Node Exporter, smartctl_exporter, Slack alerting
 - **AI/ML:** Ollama, Open WebUI, LLM inference
 - **Security:** SSH key authentication, UFW, WireGuard
@@ -180,7 +195,7 @@ homelab/
 - [ ] Implement Ansible for automated fleet provisioning
 - [ ] Add Nextcloud for self-hosted cloud storage
 - [ ] Deploy Pi-hole for network-wide ad blocking
-- [ ] OBD2 vehicle data logger for 2010 Toyota Tacoma — log RPM, speed, coolant temp, and engine load via Bluetooth OBD2 adapter, sync logs to NAS, visualize in Grafana (in progress)
+- [ ] Replace Sony VAIO SSD with Samsung PM851 mSATA
 
 ## Author
 
