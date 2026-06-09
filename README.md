@@ -191,9 +191,6 @@ homelab/
 
 - [ ] Extend fleet to AWS (hybrid cloud architecture)
 - [ ] Deploy services across on-prem and cloud with Kubernetes federation
-- [ ] Set up CI/CD pipeline with Gitea and ArgoCD
-- [ ] Implement Ansible for automated fleet provisioning
-- [ ] Add Nextcloud for self-hosted cloud storage
 - [ ] Deploy Pi-hole for network-wide ad blocking
 - [ ] Replace Sony VAIO SSD with Samsung PM851 mSATA
 
