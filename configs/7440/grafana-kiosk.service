@@ -1,0 +1,23 @@
+[Unit]
+Description=Grafana Kiosk
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Environment=WAYLAND_DISPLAY=wayland-0
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/google-chrome \
+  --noerrs \
+  --disable-infobars \
+  --disable-session-crashed-bubble \
+  --no-first-run \
+  --start-fullscreen \
+  --password-store=basic \
+  --ozone-platform=wayland \
+  http://100.96.120.65:3000/d/rYdddlPWk/node-exporter-full
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
