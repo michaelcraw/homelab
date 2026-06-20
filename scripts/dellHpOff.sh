@@ -8,4 +8,8 @@ echo "Shutting down HP NAS"
 ssh michael@100.64.249.4 "sudo shutdown now" 2>/dev/null
 echo "[hp-nas] shutdown sent"
 
-echo "dell-7050 and hpNas shutting down"
+echo "Shutting down Dell 5070"
+ssh michael@100.108.102.105 "sudo shutdown now" 2>/dev/null
+echo "[5070] shutdown sent"
+
+echo "dell-7050, hpNas, and 5070 shutting down"
