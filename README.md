@@ -65,9 +65,12 @@ An 8-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes
 ## What's Running
 
 ### Kubernetes (k3s) — 3-Node Cluster
-- **Control plane + worker:** Dell 7050
-- **Worker nodes:** HP Compaq, Lenovo
+- **Control plane + worker:** Dell 7440 (always-on, NVMe datastore)
+- **Worker nodes:** Dell 5070, Dell 7050
+- **Expandable:** HP Compaq and Lenovo join as workers when online
+- Flannel runs over `tailscale0` so the cluster spans the mesh VPN
 - Automatic pod scheduling and self-healing across nodes
+- Cluster install, node join, and workload manifests in [`kubernetes/`](kubernetes/README.md)
 
 ### Monitoring Stack (Sony VAIO)
 - **Prometheus** scraping Node Exporter and smartctl_exporter from all machines
@@ -160,7 +163,9 @@ homelab/
 │   ├── wake-dellHp.sh           # WOL wake Dell + HP
 │   ├── motion-storage-check.sh  # Pi camera storage rotation
 │   ├── screen-off-7440.sh       # Turn off Dell 7440 display remotely
-│   └── screen-on-7440.sh        # Turn on Dell 7440 display remotely
+│   ├── screen-on-7440.sh        # Turn on Dell 7440 display remotely
+│   ├── k8s-install.sh           # Stand up k3s cluster (server + agents)
+│   └── k8s-deploy.sh            # Apply homelab manifests to the cluster
 ├── configs/
 │   ├── prometheus/
 │   │   └── prometheus.yml       # Prometheus scrape configuration
@@ -173,6 +178,9 @@ homelab/
 │   │   └── grafana-kiosk.service # Systemd user service for Grafana kiosk
 │   ├── samba/                   # Samba share configuration
 │   └── syncthing/               # Syncthing configuration
+├── kubernetes/
+│   ├── README.md                # k3s cluster install + node join
+│   └── manifests/               # Applyable workloads (namespace, dashboard)
 └── screenshots/                 # Grafana dashboard screenshots
 ```
 

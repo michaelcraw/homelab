@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homelab-dashboard
+  namespace: homelab
+  labels:
+    app: homelab-dashboard
+spec:
+  # One replica per worker node — demonstrates scheduling + self-healing
+  # across the three k3s nodes.
+  replicas: 3
+  selector:
+    matchLabels:
+      app: homelab-dashboard
+  template:
+    metadata:
+      labels:
+        app: homelab-dashboard
+    spec:
+      # Spread the replicas across nodes; tolerate fewer nodes than replicas
+      # (ScheduleAnyway) so the deploy still comes up if a node is offline.
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: homelab-dashboard
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 10
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: html
+          configMap:
+            name: homelab-dashboard-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homelab-dashboard-html
+  namespace: homelab
+data:
+  index.html: |
+    <!doctype html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>Fleet Management Homelab</title>
+      <style>
+        body { font-family: system-ui, sans-serif; background:#0d1117; color:#c9d1d9;
+               display:flex; min-height:100vh; align-items:center; justify-content:center; margin:0; }
+        .card { text-align:center; padding:2rem 3rem; border:1px solid #30363d; border-radius:12px; }
+        h1 { margin:0 0 .5rem; }
+        code { color:#58a6ff; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <h1>Fleet Management Homelab</h1>
+        <p>Served from k3s across the fleet.</p>
+        <p>Served by pod: <code>POD_HOSTNAME</code></p>
+      </div>
+    </body>
+    </html>
