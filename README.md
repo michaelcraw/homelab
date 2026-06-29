@@ -29,8 +29,8 @@ An 8-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes
 │  │  AMD A10     │  │  Intel Core M│  │  ARM Cortex-A72      │   │
 │  │  19GB RAM    │  │  8GB RAM     │  │  4GB RAM             │   │
 │  │              │  │              │  │                      │   │
-│  │  • K8s Worker│  │  • K8s       │  │  • Live Camera       │   │
-│  │  • WAN NAS   │  │    Worker    │  │    (Motion)          │   │
+│  │              │  │              │  │  • Live Camera       │   │
+│  │  • WAN NAS   │  │              │  │    (Motion)          │   │
 │  │  • Samba     │  │  • Sysadmin  │  │  • Motion Alerts     │   │
 │  │  • Syncthing │  │    Sandbox   │  │    (Slack)           │   │
 │  │  • mergerfs  │  │              │  │  • Auto Storage      │   │
