@@ -7,6 +7,8 @@ MACHINES=(
   "michael@100.64.249.4|hp-nas"
   "michael@100.73.143.19|pi"
   "michael@100.108.102.105|5070"
+  "michael@100.106.110.55|dell-7440"
+  "chris@100.102.26.15|vt-pc"
 )
 
 for ENTRY in "${MACHINES[@]}"; do

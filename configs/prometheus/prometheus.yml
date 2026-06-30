@@ -1,8 +1,8 @@
 # Sample config for Prometheus.
 
 global:
-  scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  scrape_interval:     5s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 5s # Evaluate rules every 15 seconds. The default is every 1 minute.
   # scrape_timeout is set to the global default (10s).
 
   # Attach these labels to any time series or alerts when communicating with
@@ -69,6 +69,14 @@ scrape_configs:
         labels:
           instance: 'mac'
 
+      - targets: ['100.106.110.55:9100']
+        labels:
+          instance: 'dell-7440'
+
+      - targets: ['100.102.26.15:9100']
+        labels:
+          instance: 'vt-pc'
+
   - job_name: 'smartctl'
     static_configs:
       - targets: ['100.117.229.28:9633']
@@ -83,7 +91,12 @@ scrape_configs:
       - targets: ['100.66.222.35:9633']
         labels:
           instance: 'lenovo'
-
       - targets: ['100.108.102.105:9633']
         labels:
           instance: 'dell-5070'
+      - targets: ['100.106.110.55:9633']
+        labels:
+          instance: 'dell-7440'
+      - targets: ['100.102.26.15:9633']
+        labels:
+          instance: 'vt-pc'
