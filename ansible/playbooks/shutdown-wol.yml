@@ -1,0 +1,8 @@
+- name: Shutdown WOL-capable machines
+  hosts: dell-7050,hp-nas,dell-5070
+  become: yes
+  tasks:
+    - name: Shutdown now
+      community.general.shutdown:
+        delay: 0
+

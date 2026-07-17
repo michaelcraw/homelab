@@ -1,0 +1,7 @@
+- name: Shutdown fleet
+  hosts: fleet
+  become: yes
+  tasks:
+    - name: Shutdown now
+      community.general.shutdown:
+        delay: 0

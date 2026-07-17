@@ -1,0 +1,15 @@
+- name: Reboot fleet (all except Sony)
+  hosts: fleet:!sony
+  become: yes
+  tasks:
+    - name: Reboot and wait for host to come back
+      reboot:
+        reboot_timeout: 200
+
+- name: Reboot Sony last (WOL relay)
+  hosts: sony
+  become: yes
+  tasks:
+    - name: Reboot and wait for host to come back
+      reboot:
+        reboot_timeout: 200

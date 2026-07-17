@@ -1,0 +1,8 @@
+- name: Update and upgrade fleet
+  hosts: fleet
+  become: yes
+  tasks:
+    - name: sudo apt update && sudo apt full-upgrade -y
+      apt:
+        update_cache: yes
+        upgrade: dist

@@ -12,4 +12,12 @@ echo "Shutting down Dell 5070"
 ssh michael@100.108.102.105 "sudo shutdown now" 2>/dev/null
 echo "[5070] shutdown sent"
 
-echo "dell-7050, hpNas, and 5070 shutting down"
+echo "Shutting down pi"
+ssh michael@100.73.143.19 "sudo shutdown now" 2>/dev/null
+echo "[pi] shutdown sent"
+
+echo "Shutting down 7440"
+ssh michael@100.106.110.55 "sudo shutdown now" 2>/dev/null
+echo "[7440] shutdown sent"
+
+echo "dell-7050, hpNas,5070, pi. and 7440 shutting down"

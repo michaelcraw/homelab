@@ -1,0 +1,11 @@
+- name: Wake Dell 7050, HP NAS, and Dell 5070 via Sony relay
+  hosts: sony
+  tasks:
+    - name: Wake Dell 7050
+      command: wakeonlan -i 192.168.8.255 b8:85:84:a0:22:c7
+
+    - name: Wake HP NAS
+      command: wakeonlan -i 192.168.8.255 6c:3b:e5:3a:e2:81
+
+    - name: Wake Dell 5070
+      command: wakeonlan -i 192.168.8.255 00:4e:01:bc:04:ba
