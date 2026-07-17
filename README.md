@@ -118,15 +118,16 @@ An 8-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes
 - **Slack webhook alerts** triggered automatically on motion detection
 - Custom **systemd timer** checks disk usage every 5 minutes and switches recording to a secondary USB drive at 90% capacity
 
-### Fleet Automation (Mac)
-- **update-fleet.sh** — runs apt update/upgrade on all machines
-- **reboot-fleet.sh** — reboots selected machines remotely
-- **shutdown-fleet.sh** — shuts down the fleet
-- **dellHpOff.sh** — targeted shutdown for Dell 7050, HP NAS, and Dell 7440
-- **wake-dellHp.sh** — Wake-on-LAN via Sony relay
-- **screen-off-7440.sh** — turns off Dell 7440 display remotely via gdbus over SSH
-- **screen-on-7440.sh** — turns on Dell 7440 display remotely via gdbus over SSH
-- All scripts handle offline machines gracefully
+### Fleet Automation (Ansible, run from Mac)
+- **fleet-update** — apt update/upgrade across the fleet, idempotent (only reports changes when something actually updates)
+- **fleet-reboot** — reboots the fleet, Sony rebooted last to preserve the WOL relay path during the sequence
+- **fleet-shutdown** — shuts down the fleet, excluding Sony
+- **fleet-shutdown-wol** — shuts down just the WOL-capable machines (dell-7050, hp-nas)
+- **fleet-wake** — sends WOL magic packets via Sony as relay, for dell-7050, hp-nas, and dell-5070
+- All commands accept `--limit <hostname>` to target a single machine
+- Inventory and playbooks live in `ansible/`; aliases defined in `~/.zshrc`
+- **screen-off-7440.sh** / **screen-on-7440.sh** — still bash, turns the Dell 7440 kiosk display on/off remotely via gdbus over SSH (not yet migrated to Ansible)
+- Legacy update/reboot/shutdown/WOL bash scripts kept in `scripts/` for reference
 
 ### Wake-on-LAN
 - WOL enabled in BIOS and OS (ethtool + systemd service) on Dell 7050 and HP Compaq
@@ -158,33 +159,20 @@ An 8-machine homelab fleet managed remotely from a MacBook, featuring Kubernetes
 ```
 homelab/
 ├── README.md
-├── scripts/
-│   ├── update-fleet.sh          # Fleet-wide apt update/upgrade
-│   ├── reboot-fleet.sh          # Fleet reboot with Pi prompt
-│   ├── shutdown-fleet.sh        # Fleet shutdown
-│   ├── dellHpOff.sh             # Targeted Dell 7050 + HP + Dell 7440 shutdown
-│   ├── wake-dellHp.sh           # WOL wake Dell + HP
+├── ansible/
+│   ├── inventory.ini             # Fleet inventory, grouped by role
+│   └── playbooks/
+│       ├── update.yml            # apt update/upgrade, idempotent
+│       ├── reboot.yml            # Fleet reboot, Sony last
+│       ├── shutdown-fleet.yml    # Fleet shutdown, excludes Sony
+│       ├── shutdown-wol.yml      # Shutdown WOL-capable machines only
+│       └── wake.yml              # WOL magic packets via Sony relay
+├── scripts/                      # Legacy bash scripts, kept for reference
 │   ├── motion-storage-check.sh  # Pi camera storage rotation
 │   ├── screen-off-7440.sh       # Turn off Dell 7440 display remotely
 │   ├── screen-on-7440.sh        # Turn on Dell 7440 display remotely
 │   ├── k8s-install.sh           # Stand up k3s cluster (server + agents)
 │   └── k8s-deploy.sh            # Apply homelab manifests to the cluster
-├── configs/
-│   ├── prometheus/
-│   │   └── prometheus.yml       # Prometheus scrape configuration
-│   ├── grafana/
-│   │   └── alert-queries.md     # Grafana alert queries (Slack webhook)
-│   ├── docker/
-│   │   ├── dell-7050-docker.md  # Dell 7050 container configs
-│   │   └── hp-docker.md         # HP Compaq container configs
-│   ├── 7440/
-│   │   └── grafana-kiosk.service # Systemd user service for Grafana kiosk
-│   ├── samba/                   # Samba share configuration
-│   └── syncthing/               # Syncthing configuration
-├── kubernetes/
-│   ├── README.md                # k3s cluster install + node join
-│   └── manifests/               # Applyable workloads (namespace, dashboard)
-└── screenshots/                 # Grafana dashboard screenshots
 ```
 
 ## Skills & Technologies
@@ -193,7 +181,7 @@ homelab/
 - **Monitoring:** Prometheus, Grafana, Node Exporter, smartctl_exporter, Slack alerting
 - **AI/ML:** Ollama, Open WebUI, LLM inference
 - **Security:** SSH key authentication, UFW, WireGuard
-- **Automation:** Bash scripting, systemd services, Wake-on-LAN, DKMS
+- **Automation:** Ansible, Bash scripting, systemd services, Wake-on-LAN, DKMS
 - **Low-level:** x86 assembly (NASM), BIOS interrupts, bootloader development
 - **Operating Systems:** Debian 12/13, Linux Mint, macOS
 - **Networking:** Layer 2/3, WOL, DNS, SMB, mesh VPN
